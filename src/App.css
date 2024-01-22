@@ -1,5 +1,5 @@
 *{
-  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-family:'Courier New', Courier, monospace;
 }
 #header{
   background-color: black;
@@ -16,7 +16,7 @@ p{
   margin-top: 20px;
 }
 .card{
-  height:300px;
+  height:400px;
 }
 #lastNameData{
   margin-left: 20px;
@@ -36,4 +36,11 @@ p{
 }
 #digitalReceipt{
   width:50%;
+}
+#shoppingCart{
+  border: 1px solid black;
+  height:400px;
+  position: relative;
+  right:0;
+  left:60%;
 }

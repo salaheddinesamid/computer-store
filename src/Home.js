@@ -2,15 +2,20 @@ import React, { useState } from "react";
 import {Routes, Route, useNavigate, BrowserRouter} from 'react-router-dom'
 import { PersonalDetails } from "./Components/PersonalDetails";
 import { Ordering } from "./Components/Ordering";
+import { ShoppingCart } from "./Components/ShoppingCart";
 import './App.css';
 import "react-notifications-component/dist/theme.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
-import { OrderConfirmation } from "./Components/OrderConfirmation";
+import { OrderSummary } from "./Components/OrderSummary";
 export function Home(){
+    const [isConfirmed,setIsConfirmed] = useState(false);
     const [price1,setPrice1] = useState(400);
     const [price2,setPrice2] = useState(550.57);
     const [price3,setPrice3] = useState(606.15);
+    let [quantity2,setQuantity2] = useState(0);
+    const [firstNameErrorDisplay,setFirstNameErrorDisplay] = useState("none")
+    const [lastNameErrorDisplay,setLastNameErrorDisplay] = useState("none")
     let [firstName,setFirstName] = useState("");
     let [lastName,setLastName] = useState("");
     let [email,setEmail] = useState("");
@@ -28,23 +33,40 @@ export function Home(){
     function handleLastName(e){
         setLastName(e.target.value);
     }
+    function handleAddress(e){
+        setAddress(e.target.value);
+    }
     function handleAddCpu1(){
         setTotal(total = total + price1);
         //setProducts(products.push("Intel® Core™ Ultra Processors1"))
     }
     function handleCpu2(){
-        setTotal(total = total + price2);
+        setQuantity2(quantity2 => quantity2 +1);
+        setTotal(total => total + (price2*quantity2));
+    }
+    function handleCpu3(){
+        setTotal(total = total + price3);
+    }
+    function handleRemoveCpu2(){
+        setQuantity2(quantity2 => quantity2 -1);
     }
     function Confirm(){
-        nav('/confirmation')
+        if(firstName !=="" && lastName!=="" && email!=="" && address !=="" && total>0)
+        {
+                nav('/confirmation');
+                setIsConfirmed(true);
+                
+        } else if(firstName === ""){
+            setFirstNameErrorDisplay("block")
+        }
+        else if(lastName === ""){
+            setLastNameErrorDisplay("block");
+        }
+        else if(email === ""){
+            alert('Invalid Form, Email can not be empty')
+        }
     }
-    return <div>
-    <div>
-         <div id="alertDiv" class="alert">
-            <h1>Your order has been confirmed</h1> 
-       </div>
-    </div>
-    
+    return <div>    
     <div className="row">
         <div id="header" className="col-xl-12">
             <h1 class="text-center">COMPUTER STORE</h1>
@@ -60,19 +82,35 @@ export function Home(){
             <div class="row">
               <div class="col-xl-8 mb-3">
                 <label for="exampleFormControlInput1" class="form-label">First Name:</label>
-                   <input type="email" onChange={handleFirstName} class="form-control" value={firstName} id="exampleFormControlInput1" placeholder=""/>
+                   <input type="text" onChange={handleFirstName} class="form-control" value={firstName} id="exampleFormControlInput1" placeholder=""/>
+                       <div itemID="firstNameError" class="form-text text-danger" style={
+                        {
+                            display: firstNameErrorDisplay,
+                            fontSize : "10px"
+                        }
+                       }>
+                          Please enter your first name
+                      </div>
                   </div>
             </div>
             <div class="row">
             <div class="col-xl-8 mb-3">
                 <label for="lastName" class="form-label">Last Name:</label>
-                   <input type="email" value={lastName} onChange={handleLastName} class="form-control" id="lastName" placeholder=""/>
+                   <input type="text" value={lastName} onChange={handleLastName} class="form-control" id="lastName" placeholder=""/>
+                   <div itemID="firstNameError" class="form-text text-danger" style={
+                        {
+                            display: lastNameErrorDisplay,
+                            fontSize : "10px"
+                        }
+                       }>
+                          Please enter your last name
+                      </div>
                   </div>
             </div>
             <div class="row">
             <div class="col-xl-8 mb-3">
                  <label for="exampleFormControlInput1" class="form-label">Email address:</label>
-                 <input type="email" class="form-control" onChange={handleEmail} id="exampleFormControlInput1" placeholder="name@example.com"/>
+                 <input type="email" value={email} class="form-control" onChange={handleEmail} id="exampleFormControlInput1" placeholder="name@example.com"/>
                         </div>
             </div>
             <div class="row">
@@ -331,17 +369,17 @@ export function Home(){
             <div class="row">
                 <div class="col-xl-8 mb-3">
                     <label for="address" class="label-form">Address:</label>
-                    <input type="text" placeholder="" class="form-control"/>
+                    <input type="text" onChange={handleAddress} value={address} placeholder="" class="form-control"/>
                 </div>
             </div>
         </div>
         </div>
         <div className="col-7">
-            <Ordering price1={price1} price2={price2} price3={price3} handlePrice1={handleAddCpu1} handlePrice2={handleCpu2} />
+            <Ordering price1={price1} price2={price2} quantity={quantity2} price3={price3} handlePrice1={handleAddCpu1} handlePrice2={handleCpu2} handleRemoveCpu2={handleRemoveCpu2} handlePrice3={handleCpu3} />
         </div>
     </div>
     <div class="row">
-        <OrderConfirmation firstName={firstName} lastName={lastName} email={email} address={address} total={total} products={products} Confirm={Confirm} />
+        <OrderSummary Confirm={Confirm} totalPrice={total} />
     </div>
 </div>
 </div>
